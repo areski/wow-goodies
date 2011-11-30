@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+# Reference : http://serverfault.com/questions/3331/how-do-i-find-out-what-version-of-linux-is-running
+#
 # Usage :
 #
 # source /path/to/this/script.sh
