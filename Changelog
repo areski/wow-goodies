@@ -1,0 +1,50 @@
+================
+ Change history
+================
+
+.. contents::
+    :local:
+
+.. _version-1.0.0:
+
+1.0.0
+=====
+:status: DEVELOPMENT
+:branch: master
+
+.. _v100-important:
+
+Important Notes
+---------------
+
+* Not much to say here
+
+    Things will come...
+
+
+.. _v100-news:
+
+News    
+----
+
+* Add bash script that will return the distribution type
+
+* Add Changelog script that will dig into git log to produce a Changelog file
+
+
+.. _v100-security-fixes:
+
+Security Fixes
+--------------
+
+* Nothing
+
+
+.. _v100-fixes:
+
+Fixes
+-----
+
+* Nothing
+
+
