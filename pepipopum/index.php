@@ -27,12 +27,20 @@
 
 
 /**
+* set to true if want this to actually do anything. This is used to
+* turn it off if the original hosted version gets abused
+*/
+define('ACTIVATED', true);
+
+/**
  * Define delay between Google API calls (can be fractional for sub-second delays)
  * 
  * This reduces load on the server and plays nice with Google. If you want a faster
  * experience, simply host Pepipopum on your own server and lower this value.
  */ 
 define('PEPIPOPUM_DELAY', 1);
+
+include 'local_vars.php';
  
  /**
  * POProcessor provides a simple PO file parser
@@ -303,14 +311,17 @@ class POTranslator extends POProcessor
         {
             $q=urlencode($input);
             $langpair=urlencode("{$this->srcLanguage}|{$this->targetLanguage}");
-            $url="http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&q={$q}&langpair={$langpair}";
+            #$url="http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&q={$q}&langpair={$langpair}";
+            $key=API_KEY;
+            $url="https://www.googleapis.com/language/translate/v2?key=$key&q={$q}&source={$this->srcLanguage}&target={$this->targetLanguage}";
             $cmd="curl -e ".escapeshellarg($this->referrer).' '.escapeshellarg($url);
+            #echo $cmd;
             
             $result=`$cmd`;
             $data=json_decode($result);
-            if (is_object($data) && is_object($data->responseData) && isset($data->responseData->translatedText))
+            if (is_object($data) && is_object($data->data) && isset($data->data->translations[0]->translatedText))
             {
-                $output=$data->responseData->translatedText;    
+                $output=$data->data->translations[0]->translatedText;
                 
                 //Google translate mangles placeholders, lets restore them
                 $output=preg_replace('/%\ss/', '%s', $output);
@@ -443,7 +454,7 @@ if (isset($_GET['download']) && isset($_GET['name']))
     exit;
 }
 
-if (isset($_POST['output']) && ($_POST['output']=='pofile'))
+if (isset($_POST['output']) && ($_POST['output']=='pofile') && ACTIVATED)
 {
     processForm();
 }
@@ -543,10 +554,12 @@ legend
 <div id="main">
 
 <?php
-if (isset($_POST['output']) && ($_POST['output']=='html'))
+if (isset($_POST['output']) && ($_POST['output']=='html') && ACTIVATED)
 {
     processForm();
 }
+
+$enabled=ACTIVATED?'':'disabled';
 ?>
 
 <h1>Pepipopum - Translate PO files with Google Translate</h1>
@@ -645,7 +658,8 @@ allows you to upload a proof-read PO and just get translations for any new eleme
      </fieldset>
    
     <div>
-    <input type="submit" value="Translate File" />
+    <input type="submit" value="Translate File" <?php echo $enabled ?>/>
+    <?php if (!ACTIVATED) echo "translation disabled - download the source and you can run it yourself :)" ?>
     </div>
     
 </form>
